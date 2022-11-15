@@ -23,5 +23,10 @@ RUN apt-get update && apt-get install -y \
     lsb-release
 
 WORKDIR /home/linuxsgx 
-RUN git clone https://github.com/intel/linux-sgx.git \
-    cd linux-sgx && make preparation
+RUN git clone https://github.com/intel/linux-sgx.git; \
+    cd linux-sgx && make preparation; \
+    cp externel/toolset/ubuntu18.04/* /usr/local/bin; \
+    make sdk DEBUG=1; \
+    cd linux/installer/bin; 
+    
+
