@@ -10,21 +10,19 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libcurl4-openssl-dev \
     protobuf-compiler \
-    libprotobuf-dev
+    libprotobuf-dev \
+    git
 
 WORKDIR /home/linuxsgx 
-RUN git clone https://github.com/intel/linux-sgx.git; \
-    git checkout sgx_1.8
+RUN git clone https://github.com/intel/linux-sgx.git
 WORKDIR /home/linuxsgx/linux-sgx
-RUN ./download_prebuild.sh
-# RUN cd build/linux && make; \
+RUN git checkout tags/sgx_1.8; \
+    ./download_prebuilt.sh; \
+    cd sdk && make DEBUG=1; \
+    cd .. && make sdk_install_pkg; \
+    cd linux/installer/bin && echo yes | ./sgx_linux_x64_sdk_1.8.100.37689.bin
+SHELL ["/bin/bash", "-c"]
+RUN cd linux/installer/bin/sgxsdk && source environment
 
-# RUN make preparation; \
-#      cp /home/linuxsgx/linux-sgx/external/toolset/ubuntu18.04/* /usr/local/bin; \
-#      make sdk DEBUG=1; \
-#      make sdk_install_pkg DEBUG=1; \
-#      cd linux/installer/bin && ./sgx_linux_x64_sdk_2.17.101.1.bin --prefix /home/linuxsgx/sdk
-# WORKDIR /home/linuxsgx/sdk
-# SHELL ["/bin/bash", "-c"]
-# RUN cd sgxsdk && source environment
-
+WORKDIR /home/linuxsgx
+COPY . .
