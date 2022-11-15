@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /home/linuxsgx 
 RUN git clone https://github.com/intel/linux-sgx.git
-RUN cd linux-sgx 
+WORKDIR /home/linuxsgx/linux-sgx
 RUN make preparation
 RUN cp /home/linuxsgx/linux-sgx/external/toolset/ubuntu18.04/* /usr/local/bin
 RUN ls 
