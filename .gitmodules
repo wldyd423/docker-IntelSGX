@@ -1,3 +1,6 @@
 [submodule "cachezoom/CacheZoom"]
 	path = cachezoom/CacheZoom
 	url = https://github.com/vernamlab/CacheZoom.git
+[submodule "sgxBomb/sgx-bomb"]
+	path = sgxBomb/sgx-bomb
+	url = https://github.com/sslab-gatech/sgx-bomb.git
