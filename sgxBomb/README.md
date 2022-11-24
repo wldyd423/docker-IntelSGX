@@ -11,4 +11,6 @@ sudo docker run -it -v /lib/modules:/lib/modules -v /usr/src:/usr/src sgx:bomb
 
 
 sgxsdk in /home/linuxsgx/linux-sgx/linux/installer/bin/
-move to /opt/intel and source
+move to /opt/intel and source environmnet
+
+move Makefile into enclave of sgxbomb
