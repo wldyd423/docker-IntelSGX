@@ -146,9 +146,14 @@ static const struct file_operations proc_file_fops = {
  .write = phy_write,
 };
 
+static struct proc_ops my_fops = {
+    .proc_write = phy_write
+};
+
 // Create a file /proc/jump, with writes handled by jump_write.
 int init_phyaddr(void) {
-    struct proc_dir_entry *ent = proc_create("phyaddr", 0666, NULL, &proc_file_fops);
+    // struct proc_dir_entry *ent = proc_create("phyaddr", 0666, NULL, &proc_file_fops);
+    struct proc_dir_entry *ent = proc_create("phyaddr", 0666, NULL, &my_fops);
     if (ent == NULL)
         return -ENOMEM;
     else {
