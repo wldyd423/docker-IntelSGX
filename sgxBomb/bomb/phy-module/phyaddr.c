@@ -6,8 +6,7 @@
 
 #include <linux/sched.h>                /* test_thread_flag(), ...      */
 #include <linux/kdebug.h>               /* oops_begin/end, ...          */
-// #include <linux/bootmem.h>              /* max_low_pfn                  */
-#include "bootmem.h"
+#include <linux/bootmem.h>              /* max_low_pfn                  */
 #include <linux/kprobes.h>              /* NOKPROBE_SYMBOL, ...         */
 #include <linux/mmiotrace.h>            /* kmmio_handler, ...           */
 #include <linux/perf_event.h>           /* perf_sw_event                */
@@ -46,7 +45,7 @@
 #include <linux/gfp.h>
 #include <linux/migrate.h>
 #include <linux/string.h>
-#include "dma-debug.h"
+#include <linux/dma-debug.h>
 #include <linux/debugfs.h>
 #include <linux/userfaultfd_k.h>
 #include <linux/dax.h>
@@ -146,14 +145,9 @@ static const struct file_operations proc_file_fops = {
  .write = phy_write,
 };
 
-static struct proc_ops my_fops = {
-    .proc_write = phy_write
-};
-
 // Create a file /proc/jump, with writes handled by jump_write.
 int init_phyaddr(void) {
-    // struct proc_dir_entry *ent = proc_create("phyaddr", 0666, NULL, &proc_file_fops);
-    struct proc_dir_entry *ent = proc_create("phyaddr", 0666, NULL, &my_fops);
+    struct proc_dir_entry *ent = proc_create("phyaddr", 0666, NULL, &proc_file_fops);
     if (ent == NULL)
         return -ENOMEM;
     else {
