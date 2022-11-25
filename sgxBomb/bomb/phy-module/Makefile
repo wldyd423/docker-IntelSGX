@@ -1,4 +1,5 @@
-obj-m = phyaddr.o bootmem.h dma-debug.h
+# obj-m = phyaddr.o bootmem.h dma-debug.h
+obj-m = phyaddr.o 
 
 M=$(shell pwd)
 
