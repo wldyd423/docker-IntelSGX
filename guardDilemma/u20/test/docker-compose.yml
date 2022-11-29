@@ -1,0 +1,15 @@
+version: '3'
+services:
+  test:
+    build: .
+    networks:
+      test_network:
+        ipv4_address: 10.0.1.77
+networks:
+  test_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.1.0/24
+    driver_opts:
+      com.docker.network.bridge.name: test_network

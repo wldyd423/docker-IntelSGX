@@ -1,3 +1,5 @@
+# Built for intel-linux sgx for latest version: sgx_2.18
+# If it does not build add git checkout sgx_2.18_reproducible or something
 FROM ubuntu:18.04
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -23,7 +25,10 @@ RUN apt-get update && apt-get install -y \
     lsb-release
 
 WORKDIR /home/linuxsgx 
-RUN git clone https://github.com/intel/linux-sgx.git
+# Intel linux sgx was updated making this not work. Below (git checkout sgx_2.17_reproducible) is probable(?) solution
+# TODO: Check if this actually runs (is it fixed?)
+RUN git clone https://github.com/intel/linux-sgx.git; \
+    git checkout sgx_2.17_reproducible
 WORKDIR /home/linuxsgx/linux-sgx
 RUN make preparation; \
      cp /home/linuxsgx/linux-sgx/external/toolset/ubuntu18.04/* /usr/local/bin; \
