@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y \
     libprotobuf-dev \
     libprotobuf-c0-dev \
     git \
-    openssh-server
+    openssh-server \
+    gdb
 
 WORKDIR /home/linuxsgx 
 RUN git clone https://github.com/intel/linux-sgx.git
@@ -40,5 +41,6 @@ EXPOSE 22
 #set password to root
 #ssh root@10.0.1.77 (password root)
 RUN sed -i 's/export SGX_SDK=\/home\/linuxsgx\/linux-sgx\/linux\/installer\/bin\/sgxsdk/export SGX_SDK=\/home\/linuxsgx\/sgxsdk/' /home/linuxsgx/sgxsdk/environment
+
 
 CMD ["/usr/sbin/sshd", "-D"]
