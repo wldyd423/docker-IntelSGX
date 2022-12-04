@@ -24,9 +24,9 @@ WORKDIR /home/linuxsgx/linux-sgx
 RUN git checkout tags/sgx_1.6; \
     ./download_prebuilt.sh; \
     cd sdk && make DEBUG=1; \
-    cd .. && make sdk_install_pkg; \
-    cd linux/installer/bin && echo yes | ./sgx_linux_x64_sdk_1.6.100.34922.bin; \
-    cp -r sgxsdk /home/linuxsgx 
+    cd .. && make sdk_install_pkg
+WORKDIR /opt/intel
+RUN echo yes | /home/linuxsgx/linux-sgx/linux/installer/bin/sgx_linux_x64_sdk_1.6.100.34922.bin
 
 #create ssh server (For Debugging)
 RUN mkdir /var/run/sshd; \
@@ -40,7 +40,7 @@ RUN mkdir /var/run/sshd; \
 EXPOSE 22
 #set password to root
 #ssh root@10.0.1.77 (password root)
-RUN sed -i 's/export SGX_SDK=\/home\/linuxsgx\/linux-sgx\/linux\/installer\/bin\/sgxsdk/export SGX_SDK=\/home\/linuxsgx\/sgxsdk/' /home/linuxsgx/sgxsdk/environment
-
+WORKDIR /home/linuxsgx
+COPY . .
 
 CMD ["/usr/sbin/sshd", "-D"]

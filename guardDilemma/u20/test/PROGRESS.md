@@ -136,3 +136,37 @@ Here I executed docker-compose and docker exec ... /bin/bash into the container 
 Again using a same method I acquired this.
 Similar to asm_oret() but more registers. This is continue_execution. 
 Using the base address and the address offset acquired from enclave.signed.so
+
+
+
+### Very bad news
+
+Still not working
+
+(gdb) info reg
+rax            0x7fffb6fdcf20   140736263474976
+rbx            0x616    1558
+rcx            0x614    1556
+rdx            0x320    800
+rsi            0x7fffb6fdce70   140736263474800
+rdi            0x619    1561
+rbp            0x618    0x618
+rsp            0x7fdba09a89f0   0x7fdba09a89f0 <_rtld_global+2448>
+r8             0x3cca   15562
+r9             0x3ccb   15563
+r10            0x61c    1564
+r11            0x61d    1565
+r12            0x61e    1566
+r13            0x61f    1567
+r14            0x620    1568
+r15            0x621    1569
+rip            0x7fdb9e2dcd59   0x7fdb9e2dcd59
+eflags         0x602    [ IF DF ]
+cs             0x33     51
+ss             0x2b     43
+ds             0x0      0
+es             0x0      0
+fs             0x0      0
+gs             0x0      0
+
+Notable progress is I can corrupt registers (so continue execution works well)
