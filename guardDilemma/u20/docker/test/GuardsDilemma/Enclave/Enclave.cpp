@@ -52,6 +52,5 @@ void printf(const char *fmt, ...)
 
 /* To test if App.cpp can execute function within enclave */
 int secret(){
-    // ocall_print_string("You got the secret\n");
     return 1;
 }
