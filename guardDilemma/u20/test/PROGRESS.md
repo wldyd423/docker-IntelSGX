@@ -103,7 +103,7 @@ sgxuser@7877f892d194:/proc/6$ cat maps | grep enclave
 7f1b0e5e9000-7f1b0e5ea000 rw-p 00009000 00:41 1814539                    /usr/lib/x86_64-linux-gnu/libsgx_enclave_common.so.1.2.100.3
 ```
 
-This is from a docker execution within the base linux-sgx repository /linux/installer/docker
+This is from a docker execution witAhin the base linux-sgx repository /linux/installer/docker
 
 Here I executed docker-compose and docker exec ... /bin/bash into the container looked for the map to find that the base address can be acquired this way. (Which is the method used by SnakeGX)
 
