@@ -164,3 +164,73 @@ The SGX 1.6 is the lowest version available in Linux-IntelSGX github. The paper 
    0x7fe0a5ad7d45:	mov    0x8(%rcx),%rcx
    0x7fe0a5ad7d49:	retq  
  
+# SGX 2.18
+The SGX 2.18 is the latest available in Linux-IntelSGX github. Attack does not work for this version. Maybe further investigation can be done as to why it doesn't work and how Intel has patched the SGX-SDK after release of papers such as Guard's Dilemma and SnakeGX. 
+
+## asm_oret (sgx2.18)
+
+```
+0000000000036ab8 <asm_oret>:
+   36ab8:       48 89 e3                mov    %rsp,%rbx
+   36abb:       48 89 7c 24 08          mov    %rdi,0x8(%rsp)
+   36ac0:       48 89 74 24 10          mov    %rsi,0x10(%rsp)
+   36ac5:       48 8b 63 08             mov    0x8(%rbx),%rsp
+   36ac9:       48 8b bc 24 98 00 00    mov    0x98(%rsp),%rdi
+   36ad0:       00 
+   36ad1:       e8 02 fd ff ff          call   367d8 <restore_xregs>
+   36ad6:       0f ae e8                lfence 
+   36ad9:       48 31 c0                xor    %rax,%rax
+   36adc:       48 8b 4c 24 58          mov    0x58(%rsp),%rcx
+   36ae1:       48 29 f9                sub    %rdi,%rcx
+   36ae4:       48 83 e9 08             sub    $0x8,%rcx
+   36ae8:       48 c1 e9 02             shr    $0x2,%rcx
+   36aec:       fc                      cld    
+   36aed:       f3 ab                   rep stos %eax,%es:(%rdi)
+   36aef:       48 8b 43 10             mov    0x10(%rbx),%rax
+   36af3:       4c 8b 7c 24 38          mov    0x38(%rsp),%r15
+   36af8:       4c 8b 74 24 40          mov    0x40(%rsp),%r14
+   36afd:       4c 8b 6c 24 48          mov    0x48(%rsp),%r13
+   36b02:       4c 8b 64 24 50          mov    0x50(%rsp),%r12
+   36b07:       48 8b 6c 24 58          mov    0x58(%rsp),%rbp
+   36b0c:       48 8b 7c 24 60          mov    0x60(%rsp),%rdi
+   36b11:       48 8b 74 24 68          mov    0x68(%rsp),%rsi
+   36b16:       48 8b 5c 24 70          mov    0x70(%rsp),%rbx
+   36b1b:       48 89 ec                mov    %rbp,%rsp
+   36b1e:       5d                      pop    %rbp
+   36b1f:       c3                      ret
+   36b20:       0f 0b                   ud2
+```
+
+## continue_execution (sgx2.18)
+
+```
+0000000000036bec <continue_execution>:
+   36bec:       48 89 f9                mov    %rdi,%rcx
+   36bef:       48 8b 01                mov    (%rcx),%rax
+   36bf2:       50                      push   %rax
+   36bf3:       48 8b 41 08             mov    0x8(%rcx),%rax
+   36bf7:       50                      push   %rax
+   36bf8:       48 8b 41 20             mov    0x20(%rcx),%rax
+   36bfc:       48 2d 88 00 00 00       sub    $0x88,%rax
+   36c02:       48 8b 51 10             mov    0x10(%rcx),%rdx
+   36c06:       48 8b 59 18             mov    0x18(%rcx),%rbx
+   36c0a:       48 8b 69 28             mov    0x28(%rcx),%rbp
+   36c0e:       48 8b 71 30             mov    0x30(%rcx),%rsi
+   36c12:       48 8b 79 38             mov    0x38(%rcx),%rdi
+   36c16:       4c 8b 41 40             mov    0x40(%rcx),%r8
+   36c1a:       4c 8b 49 48             mov    0x48(%rcx),%r9
+   36c1e:       4c 8b 51 50             mov    0x50(%rcx),%r10
+   36c22:       4c 8b 59 58             mov    0x58(%rcx),%r11
+   36c26:       4c 8b 61 60             mov    0x60(%rcx),%r12
+   36c2a:       4c 8b 69 68             mov    0x68(%rcx),%r13
+   36c2e:       4c 8b 71 70             mov    0x70(%rcx),%r14
+   36c32:       4c 8b 79 78             mov    0x78(%rcx),%r15
+   36c36:       ff b1 80 00 00 00       push   0x80(%rcx)
+   36c3c:       9d                      popf   
+   36c3d:       48 8b 89 88 00 00 00    mov    0x88(%rcx),%rcx
+   36c44:       48 89 08                mov    %rcx,(%rax)
+   36c47:       59                      pop    %rcx
+   36c48:       5c                      pop    %rsp
+   36c49:       48 94                   xchg   %rax,%rsp
+   36c4b:       c2 80 00                ret    $0x80
+```
