@@ -125,6 +125,7 @@ This can be done without using enclave. Actually it can be done easier that way 
 The SGX 1.6 is the lowest version available in Linux-IntelSGX github. The paper discusses this version and other post 2.0 versions and there differences in implementing key functions such as asm_oret and continue_execution.
 
 ### asm_oret (sgx1.6)
+```
    0x7fe0a5ad7c17:	mov    %rdi,%rsp
    0x7fe0a5ad7c1a:	mov    %rsi,%rax
    0x7fe0a5ad7c1d:	mov    0x38(%rsp),%r15
@@ -137,8 +138,9 @@ The SGX 1.6 is the lowest version available in Linux-IntelSGX github. The paper 
    0x7fe0a5ad7c40:	mov    0x70(%rsp),%rbx
    0x7fe0a5ad7c45:	add    $0x98,%rsp
    0x7fe0a5ad7c4c:	retq 
-
+```
 ### continue_execution (sgx1.6)
+```
    0x7fe0a5ad7cee:	mov    %rdi,%rcx
    0x7fe0a5ad7cf1:	mov    0x20(%rcx),%rdx
    0x7fe0a5ad7cf5:	mov    %rdx,%rsp
@@ -163,7 +165,7 @@ The SGX 1.6 is the lowest version available in Linux-IntelSGX github. The paper 
    0x7fe0a5ad7d44:	popfq  
    0x7fe0a5ad7d45:	mov    0x8(%rcx),%rcx
    0x7fe0a5ad7d49:	retq  
- 
+```
 # SGX 2.18
 The SGX 2.18 is the latest available in Linux-IntelSGX github. Attack does not work for this version. Maybe further investigation can be done as to why it doesn't work and how Intel has patched the SGX-SDK after release of papers such as Guard's Dilemma and SnakeGX. 
 
