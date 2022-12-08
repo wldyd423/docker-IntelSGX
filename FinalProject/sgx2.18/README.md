@@ -1,10 +1,11 @@
 # Current 12/7/2022 latest SGX. SGX 2.18. More accurately this was tested with: 4cab8786899d737307d8d1719ea607d6def61a1a commit
 
 # How to run
+```
 sudo ./up.sh
 sudo docker exec -it sgx218_test_1 /bin/bash
 sudo ./down.sh
-
+```
 
 ## Once inside docker
 ```

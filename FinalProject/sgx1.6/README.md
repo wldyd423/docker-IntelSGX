@@ -1,12 +1,15 @@
 # How to create docker container
+```
 sudo ./up.sh
-
+```
 # How to destroy docker container
+```
 sudo ./down.sh
-
+```
 # How to enter the docker container
+```
 sudo docker exec -it sgx16_test_1 /bin/bash
-
+```
 ## Once inside docker
 ```
 root@...:/home/linuxsgx#  source /opt/intel/sgxsdk/environment
